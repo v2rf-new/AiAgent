@@ -25,10 +25,11 @@ public class EmbeddingGeneration : ControllerBase
     {
         if(file.ContentType == "text/plain")
         {
-            var segments = await ChunksParser.SegmentFile(file);
             try
             {
+                var segments = await ChunksParser.SegmentFile(file);
                 await _embeddingService.LoadChunksAsync(segments);
+                _logger.LogInformation("Embedding generation successful");
                 return Ok();
             }
             catch(Exception ex)
@@ -39,6 +40,7 @@ public class EmbeddingGeneration : ControllerBase
         }
         else
         {
+            _logger.LogError("Bad request from the user: Content type is not text/plain");
             return BadRequest("Incorrect file");
         }
     }

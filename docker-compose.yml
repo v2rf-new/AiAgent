@@ -6,7 +6,7 @@ services:
     ports:
       - "11434:11434"
     volumes:
-      - ollama_data:/root/.ollama
+      - ollama_embedding_data:/root/.ollama
     # deploy:
     #   resources:
     #     reservations:
@@ -16,6 +16,25 @@ services:
     #           count: all
     networks:
       - app-network
+    post_start:
+      - command: ollama pull all-minilm
+    restart: unless-stopped
+  
+  # Comment this if you are using an external model
+  text-completion-model:
+    image: ollama/ollama:latest
+    hostname: text-completion-model
+    ports:
+      - "11435:11435"
+    volumes:
+      - ollama_completion_data:/root/.ollama
+    networks:
+      - app-network
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11435
+    runtime: nvidia
+    post_start:
+      - command: ollama pull deepseek-r1:7b
     restart: unless-stopped
 
   qdrant:
@@ -42,16 +61,20 @@ services:
         BUILD_CONFIGURATION: Development   
     env_file:
       - .env
-    environment:
-      - OLLAMA_MODEL=${OLLAMA_MODEL}
-      - OLLAMA_URI=${OLLAMA_URI}
-      - QDRANT_HOSTAME=${QDRANT_HOSTNAME}
+    # environment:
+    #   - OLLAMA_MODEL=${OLLAMA_MODEL}
+    #   - OLLAMA_URI=${OLLAMA_URI}
+    #   - QDRANT_HOSTAME=${QDRANT_HOSTNAME}
+    #   - TEXT_COMPLETION_MODEL=${TEXT_COMPLETION_MODEL}
+    #   - TEXT_COMPLETION_API_KEY=${TEXT_COMPLETION_API_KEY}
+    #   - TEXT_COMPLETION_MODEL_ENDPOINT=${TEXT_COMPLETION_MODEL_ENDPOINT}
     ports:
       - "8080:8080"
       - "8081:8081"
     depends_on:
       - qdrant
       - embedding-model
+      - text-completion-model
     restart: unless-stopped
     networks:
       - app-network
@@ -62,4 +85,6 @@ networks:
 
 volumes:
   qdrant_storage:
-  ollama_data:
+  ollama_completion_data:
+  ollama_embedding_data:
+  

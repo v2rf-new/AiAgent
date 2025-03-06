@@ -34,11 +34,10 @@ namespace AiAgent.API.Service
                         RawText = segment.Trim(),
                         DescriptionEmbedding = await _ollamaService.GenerateEmbeddingsAsync(segment)
                     });
-                    Console.WriteLine(vectorId);
                     vectorId++;
                 }
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 throw;
             }

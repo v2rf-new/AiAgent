@@ -19,7 +19,6 @@ namespace AiAgent.API.Service
 
             _ollamaUri = Environment.GetEnvironmentVariable("OLLAMA_URI")
                 ?? throw new Exception("OLLAMA_URI env var not found");
-            Console.WriteLine(_ollamaUri);
 
             _textEmbeddingGenerationService = 
                 new OllamaApiClient(_ollamaUri, _ollamaModel).AsTextEmbeddingGenerationService();
@@ -31,7 +30,7 @@ namespace AiAgent.API.Service
             {
                 return await _textEmbeddingGenerationService.GenerateEmbeddingAsync(segment);
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 throw;
             }

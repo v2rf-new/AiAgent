@@ -486,3 +486,4 @@ $RECYCLE.BIN/
 
 # AiAgent project
 Data/*
+AgentConfiguration.json
